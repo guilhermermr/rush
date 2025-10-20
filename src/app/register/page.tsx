@@ -9,12 +9,34 @@ const Register = () => {
   const [confirmPassword, setconfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
-  const handlerRegister = (e: any) => {
+  const handlerRegister = async (e: any) => {
     e.preventDefault();
 
-    password !== confirmPassword
-      ? alert("Passwords do not match")
-      : console.log("Register form submitted");
+    if (password !== confirmPassword) {
+      alert("Passwords do not match");
+      return;
+    }
+
+    try {
+      const response = await fetch("http://localhost:4001/api/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        alert(data.message || "Erro ao registrar");
+        return;
+      }
+
+      alert("Usuário registrado com sucesso!");
+      console.log(data);
+    } catch (error) {
+      console.error("Erro na requisição:", error);
+      alert("Não foi possível conectar ao servidor.");
+    }
   };
 
   return (
