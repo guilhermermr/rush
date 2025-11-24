@@ -2,15 +2,42 @@
 
 import Header from "@/components/Header";
 import { useState } from "react";
+import Dashboard from "../dashboard/page";
+import { useRouter } from "next/navigation";  
+
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const router = useRouter();
 
-  const handlerLogin = (e: any) => {
+  const handlerLogin = async (e: any) => {
     e.preventDefault();
-    console.log("Email:", email);
-    console.log("Password:", password);
+
+    try {
+      const response = await fetch("http://localhost:4001/api/user/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        router.push('/dashboard');
+      }else{        
+        alert(data.message || "Erro ao fazer login");
+        return;
+      }
+
+      
+
+      alert("Login bem-sucedido!");
+    } catch (error) {
+      console.error("Erro na requisição:", error);
+      alert("Não foi possível conectar ao servidor.");
+    }
+
   };
 
   return (
